@@ -56,10 +56,11 @@
     PROGRESS = document.getElementById('progress');
     OHOHOH = document.getElementById('ohohoh');
     CYCLE = 1000;
-    MAX_COUNT = 500;
+    MAX_COUNT = parseInt(location.hash.substring(1));
+    STARTED = false;
 
     // Init
-    function setFont() { CHECKINS.style.fontSize = window.innerHeight * 0.7 + 'px'; }
+    function setFont() { CHECKINS.style.fontSize = window.innerHeight * 0.5 + 'px'; }
     setFont();
     window.addEventListener('resize', setFont);
 
@@ -95,8 +96,7 @@
     (function tick(){
       $.ajax({
         url: 'http://graph.facebook.com/' + OBJ_ID,
-        dataType: 'json',
-        async: false
+        dataType: 'json'
       }).done(function(data){
         var name = data.name;
         var checkins = data.checkins;
@@ -105,8 +105,12 @@
         total = checkins + likes;
         CHECKINS.innerText = total;
         PROGRESS.style.width = total/MAX_COUNT*100 + '%';
-        if(total >= MAX_COUNT) OHOHOH.style.display = 'block';
-        else OHOHOH.style.display = 'none';
+        if(total >= MAX_COUNT && !STARTED){
+          startFirework();
+          STARTED = true;
+        }
+        // if(total >= MAX_COUNT) OHOHOH.style.display = 'block';
+        // else OHOHOH.style.display = 'none';
       });
       setTimeout(tick, CYCLE);
     }).call();
